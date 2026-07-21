@@ -116,9 +116,12 @@ Always distinguish:
 - Skin: visual reference only; offer Creator using its preview image.
 
 Installer downloads `GET /api/themes/<id>/download`, validates the package and
-assets, and installs to `~/.codexskin/themes/<id>/`. Installation is not
-activation. Continue to Switcher; never stop with a misleading "installed and
-done" message.
+assets, and installs to `~/.codexskin/themes/<id>/`. Install the exact id the
+user named — never substitute an already-installed or different theme. Report
+the result in one line, including the version:
+`Installed <id> version <version> at ~/.codexskin/themes/<id>/.` Installation
+is not activation. Continue to Switcher; never stop with a misleading
+"installed and done" message.
 
 ## Apply, switch, roll back, and restore
 

@@ -168,7 +168,7 @@ export async function installTheme(id) {
   for (const asset of packageData.images || []) {
     await writeEmbeddedAsset(output, 'image', asset);
   }
-  console.log(`Installed ${packageData.manifest.displayName} at ${output}. It is not active yet; use the switcher after approval.`);
+  console.log(`Installed ${packageData.manifest.displayName} version ${packageData.manifest.version} at ${output}. It is not active yet; use the switcher after approval.`);
 }
 
 async function firstExisting(input, names) {
