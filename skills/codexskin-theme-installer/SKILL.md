@@ -1,15 +1,22 @@
 ---
 name: codexskin-theme-installer
-description: Download, validate, and install a published CodexSkin theme into the user's local theme directory without activating it.
+description: Download, validate, and install a published .codexskin-theme package, then hand off to the switcher for optional activation.
 ---
 
-# CodexSkin Theme Installer
+# Install a CodexSkin theme
 
-1. Run `node scripts/codexskin.mjs install <theme-id-or-slug>`.
-2. Verify the package schema, CSS safety, and decoded assets.
-3. Install under `~/.codexskin/themes/<id>/` and report that installation does
-   not mean the theme is active.
-4. Finder and Installer are anonymous by default; an API key is optional and
-   only raises limits.
+Run `node scripts/codexskin.mjs install <theme-id-or-slug>`.
 
-Never modify Codex application bundles or signatures.
+Installer is anonymous by default. An optional `CODEXSKIN_API_KEY` only raises
+limits. Validate the independent package schema, id, CSS, embedded assets,
+size, MIME signatures, traversal safety, and external-resource prohibition
+before writing to `~/.codexskin/themes/<id>/`.
+
+Skin entries return `NOT_INSTALLABLE`; share their detail URL and offer Creator
+instead. A successful installation is not activation. Report the installed
+source path, then hand off to `$codexskin-theme-switcher`. Hot-apply only when a
+loopback endpoint already exists; otherwise ask before restarting Codex. Never
+modify Codex application bundles or signatures.
+
+Use `--force` only when the user asked to update or replace an existing local
+copy. Revalidate after replacement.

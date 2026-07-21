@@ -1,16 +1,41 @@
 ---
 name: codexskin-theme-switcher
-description: Apply, switch, validate, roll back, or restore an installed CodexSkin theme through a local-only Codex Chromium debugging port.
+description: List, apply, hot-switch, audit, roll back, status-check, and restore installed CodexSkin themes through a loopback-only Codex Chromium endpoint.
 ---
 
-# CodexSkin Theme Switcher
+# Switch or restore a CodexSkin theme
 
-Use only an already-running debugging endpoint bound to `127.0.0.1`. Apply a
-theme with `node scripts/codexskin.mjs switch <id>`, roll back with
-`node scripts/codexskin.mjs rollback`, or remove runtime styling with
-`node scripts/codexskin.mjs restore`.
+Commands:
 
-After each change, verify the injected style and state file. Never open a
-network-facing debug port, modify `Codex.app`/`app.asar`, or change an app
-signature. If Codex must restart, stop and obtain user permission first.
-Windows is Beta until the production client is validated.
+```bash
+node scripts/codexskin.mjs list
+node scripts/codexskin.mjs switch <theme-id>
+node scripts/codexskin.mjs status
+node scripts/codexskin.mjs audit
+node scripts/codexskin.mjs rollback
+node scripts/codexskin.mjs restore
+```
+
+Use only a debugging endpoint bound to `127.0.0.1`. A hot apply must inject an
+owned style and route markers into every live Codex page, register the same
+runtime for new renderer documents, preserve the previous theme, and verify
+the expected id in the real DOM.
+
+If no endpoint exists, ask for explicit permission before restarting Codex with
+loopback debugging flags. Do not restart merely because the user asked to
+install. Never open a public debugging port, edit `Codex.app`, `app.asar`, the
+signed bundle, WindowsApps, or app authentication data.
+
+After every apply:
+
+1. require `status` to report the expected active id for all pages;
+2. run `audit` before further claims;
+3. inspect home, conversation, settings, menus, diff/output, terminal after it
+   mounts, sidebar states, route changes, and a narrow window;
+4. restore or roll back immediately on unreadable text or broken interaction.
+
+`rollback` returns to the recorded previous theme. `restore` removes all
+CodexSkin styles, root markers, page markers, and new-document registrations,
+then verifies the native state. Tell the user after success that `restore`
+remains available. Windows support remains Beta until validated in a real
+production client.

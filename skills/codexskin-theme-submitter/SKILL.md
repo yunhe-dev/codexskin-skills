@@ -1,14 +1,22 @@
 ---
 name: codexskin-theme-submitter
-description: Submit or update a validated CodexSkin theme from an Agent, using anonymous review or an optional API key for immediate author publishing.
+description: Validate and submit or update a CodexSkin theme from an Agent, anonymously for review or with an optional API key for immediate owned publishing.
 ---
 
-# CodexSkin Theme Submitter
+# Submit a CodexSkin theme
 
 Run `node scripts/codexskin.mjs submit <package.codexskin-theme>`.
 
-Before upload, confirm the creator owns or may publish every asset. Without
-`CODEXSKIN_API_KEY`, explicitly tell the user the theme will be an anonymous
-submission awaiting review. With a key, the server identifies the author and
-can publish or update that author's theme immediately. Never access user
-passwords, login cookies, or OAuth credentials.
+Before transmission, identify the exact package, perform a dry validation, and
+confirm the user may share every included asset. Do not guess among multiple
+exports and do not upload until the user asked.
+
+Without `CODEXSKIN_API_KEY`, explicitly say the submission will be anonymous
+and enter review. With a key, the server identifies the author and may publish
+immediately or update that author's existing theme. The key is not a website
+login and the script must never read passwords, browser cookies, or OAuth
+credentials. Never print the complete key.
+
+Post JSON to `POST https://codexskin.cool/api/themes/submit`. Report the final
+server status and detail URL. Do not automate the human upload form as a
+fallback; on failure, report the API error and preserve the local package.

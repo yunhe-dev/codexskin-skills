@@ -1,11 +1,23 @@
 ---
 name: codexskin-theme-finder
-description: Search and compare public CodexSkin themes and visual skin inspirations without requiring login or an API key.
+description: Search and compare public CodexSkin themes and visual skin inspirations, anonymously by default and with an optional key only for higher limits.
 ---
 
-# CodexSkin Theme Finder
+# Find CodexSkin themes
 
-Run `node scripts/codexskin.mjs find [query]`. Optionally use
-`CODEXSKIN_BASE_URL` for a non-production server. Do not request an API key for
-ordinary search. Explain that Theme entries are installable packages while
-Skin entries are visual references only.
+Run `node scripts/codexskin.mjs find [style, subject, mood]`.
+
+Use `https://codexskin.cool` unless the user explicitly supplies another API
+base. Do not request an API key for ordinary search. `CODEXSKIN_API_KEY` is
+optional and only raises rate limits.
+
+Present no more than five useful results with id, kind, author, description,
+detail URL, and a locally downloaded preview suitable for displaying in chat.
+Explain each next step:
+
+- installable Theme → offer Installer and then Switcher;
+- non-installable Theme → share its detail URL for manual handling;
+- Skin → visual reference only; offer Creator using its preview image.
+
+Always share the detail URL. When the user selects an installable theme, hand
+off to `$codexskin-theme-installer`; do not claim search itself installed it.

@@ -29,8 +29,13 @@ Each skill is in `skills/<name>/SKILL.md`. The shared Node.js helper is
 ```
 
 Finder and Installer work anonymously. Set `CODEXSKIN_API_KEY` only when you
-want higher API limits or authenticated publishing. Windows support is Beta
-until validated against the production Codex client.
+want higher API limits or immediate owned publishing; without it, Submitter
+creates an anonymous pending submission. Website login never uses this key.
+Windows support is Beta until validated against the production Codex client.
+
+Run the controlled lifecycle check with `npm test`. It validates the independent
+package, both previews, local asset embedding, CodexSkin-only runtime markers,
+SPA reinjection source, CSS safety, and managed-library discovery.
 
 ## License
 

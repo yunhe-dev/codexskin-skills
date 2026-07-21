@@ -1,0 +1,10 @@
+CodexSkin Skills
+Copyright 2026 CodexSkin contributors
+
+The functional comparison and interoperability work in this repository was
+informed by the Apache-2.0 licensed CodexThemes skills project:
+https://github.com/codexthemes/skills
+
+CodexSkin uses its own brand, managed paths, runtime markers, API behavior, and
+.codexskin-theme package format. No CodexThemes theme artwork is distributed by
+this repository.
