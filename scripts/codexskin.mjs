@@ -54,7 +54,19 @@ export function validatePackage(value) {
   if (Buffer.byteLength(serialized) > 30 * 1024 * 1024) {
     fail('Portable theme package exceeds 30 MB.');
   }
-  if (/([A-Za-z]:\\|\/(?:Users|home|private|tmp)\/)/.test(serialized)) {
+  // Check raw fields, NOT the JSON-serialized package: serialization escapes
+  // newlines as `\n`, which would turn innocent CSS like `background:\n…`
+  // into a fake Windows drive prefix (`d:\`) and cause false positives.
+  const rawHaystack = [
+    value.css,
+    value.readme || '',
+    JSON.stringify(value.manifest),
+  ].join('\n');
+  if (
+    /(?<![A-Za-z])[A-Za-z]:[\\/]|\/(?:Users|home|private|tmp)\//.test(
+      rawHaystack
+    )
+  ) {
     fail('Portable theme package contains an absolute or private path.');
   }
   return value;
