@@ -1,13 +1,13 @@
 {
   "name": "@codexskin/skills",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Canonical Agent skills and standalone runtime for CodexSkin.",
   "type": "module",
   "license": "MIT",
   "scripts": {
     "test": "node tests/self-test.mjs",
-    "check": "node --check scripts/codexskin.mjs && npm test"
+    "check": "node --check scripts/codexskin.mjs && node --check scripts/readability.mjs && npm test"
   },
   "engines": {
     "node": ">=20"

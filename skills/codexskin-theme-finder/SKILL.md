@@ -13,6 +13,9 @@ optional and only raises rate limits.
 
 Present no more than five useful results with id, kind, author, description,
 detail URL, and a locally downloaded preview suitable for displaying in chat.
+Downloaded previews are cached under `~/.codexskin/cache/previews/`; an
+unavailable CDN preview must not prevent the search results themselves from
+being returned.
 Explain each next step:
 
 - installable Theme → offer Installer and then Switcher;

@@ -7,6 +7,11 @@ description: Download, validate, and install a published .codexskin-theme packag
 
 Run `node scripts/codexskin.mjs install <theme-id-or-slug>`.
 
+The installer refuses to overwrite an existing non-empty theme directory.
+Use `--force` only for a user-approved update or replacement; installation is
+staged and the previous copy is retained until the new package is fully
+validated and written.
+
 Installer is anonymous by default. An optional `CODEXSKIN_API_KEY` only raises
 limits. Validate the independent package schema, id, CSS, embedded assets,
 size, MIME signatures, traversal safety, and external-resource prohibition

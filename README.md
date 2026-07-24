@@ -18,7 +18,10 @@ tokens, or modify `Codex.app`, `app.asar`, or application signatures.
 - `$codexskin-theme-submitter`
 
 Each skill is in `skills/<name>/SKILL.md`. The shared Node.js helper is
-`scripts/codexskin.mjs` and requires Node.js 20 or newer.
+`scripts/codexskin.mjs` and requires Node.js 20 or newer. Its switcher includes
+a bounded CDP client, responsive-page probing, detached loopback-only relaunch,
+automatic DOM status verification, screenshot readability checks, rollback,
+and native restore.
 
 ## Local folders
 
@@ -26,6 +29,7 @@ Each skill is in `skills/<name>/SKILL.md`. The shared Node.js helper is
 ~/.codexskin/themes/<id>/
 ~/.codexskin/exports/
 ~/.codexskin/state/
+~/.codexskin/cache/previews/
 ```
 
 Finder and Installer work anonymously. Set `CODEXSKIN_API_KEY` only when you
