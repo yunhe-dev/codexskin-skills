@@ -128,6 +128,8 @@ try {
   assert.equal(portable.preview.filename, 'previews/preview-1440x900.png');
   assert.equal(portable.images[0].filename, 'previews/preview-980x760.png');
   assert.equal(portable.art.filename, 'assets/art.png');
+  assert.match(portable.css, /data:image\/png;base64,/);
+  assert.doesNotMatch(portable.css, /url\("assets\/art\.png"\)/);
 
   const inlined = await skill.inlineLocalAssets(css, themeDir);
   assert.match(inlined, /data:image\/png;base64,/);
