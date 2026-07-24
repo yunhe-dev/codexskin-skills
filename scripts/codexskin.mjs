@@ -426,6 +426,10 @@ export async function validateThemeDirectory(directory) {
 export async function createTheme(directory) {
   if (!directory) fail('Usage: create <theme-directory>');
   const { input, manifest, css, desktop, compact } = await validateThemeDirectory(directory);
+  // Portable packages must be self-contained. Inlining here keeps published
+  // themes compatible with switchers that validate CSS before extracting the
+  // package's local image assets.
+  const portableCss = await inlineLocalAssets(css, input);
   const readme = await readFile(join(input, 'README.md'), 'utf8').catch(() => '');
   const artRelative = manifest.art;
   let art;
@@ -447,7 +451,7 @@ export async function createTheme(directory) {
     schemaVersion: 1,
     exportedAt: new Date().toISOString(),
     manifest,
-    css,
+    css: portableCss,
     readme,
     ...(art ? { art } : {}),
     preview: {
@@ -467,7 +471,7 @@ export async function createTheme(directory) {
       externalResources: false,
       executableContent: false,
       previewSizes: ['1440x900', '980x760'],
-      sha256: createHash('sha256').update(css).digest('hex'),
+      sha256: createHash('sha256').update(portableCss).digest('hex'),
     },
   });
   await mkdir(exportsDir, { recursive: true });
