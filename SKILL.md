@@ -133,14 +133,26 @@ Use an already-running Codex Chromium debugging endpoint bound to `127.0.0.1`
 for hot switching. If none is available, ask before any restart. Never bind a
 debug endpoint to a network interface.
 
+After restart permission, use `switch <id> --launch`; its detached helper
+survives the Codex relaunch. `--launch --relaunch` forces a clean session when
+stale page registrations remain. If both supported desktop hosts are installed,
+the launcher targets the one that is currently running and verifies the exact
+requested loopback port after relaunch.
+
 An apply is successful only when `status` finds the owned style and expected
-theme id in every live Codex page. Run the readability audit next. If it fails,
-restore or roll back immediately and fix the theme before reporting success.
+theme id in every responsive full-workspace Codex page. Native auxiliary
+windows such as the hotkey window and avatar overlay are reported separately
+as `auxiliary-window` and excluded from workspace injection and screenshots.
+Apply performs a screenshot-based readability audit before it reports success
+and automatically rolls back or restores on a critical failure. `audit`
+remains available for an explicit follow-up report.
 Tell the user that `restore` is always available.
 
 `rollback` returns to the previously active CodexSkin theme. `restore` removes
 owned styles, markers, and new-document registrations and verifies the native
-look is active. A complete app quit also removes session-only styling.
+look is active. If Codex is not running, `status` reports `inactive` and
+`restore` clears stale local state without an error. A complete app quit also
+removes session-only styling.
 
 ## Publish a theme
 
