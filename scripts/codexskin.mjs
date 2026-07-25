@@ -578,7 +578,11 @@ async function rawTargetsAt(port) {
 
 export function isThemeableAppTarget(target) {
   try {
-    const route = new URL(target.url).searchParams.get('initialRoute');
+    const url = new URL(target.url);
+    if (url.pathname.endsWith('/avatar-overlay-composition-surface.html')) {
+      return false;
+    }
+    const route = url.searchParams.get('initialRoute');
     return !['/hotkey-window', '/avatar-overlay'].includes(route);
   } catch {
     return true;
@@ -1161,8 +1165,12 @@ export async function switchTheme(id, preservePrevious = true, options = cliOpti
     }
     fail(`Theme injection marker did not survive the status check.${recoveryError ? ` Recovery also failed: ${recoveryError.message}` : ' The previous appearance was restored.'}`);
   }
-  await new Promise((resolveWait) => setTimeout(resolveWait, 1200));
-  const audit = await auditLocated(located);
+  let audit;
+  for (const settleMs of [1200, 1600]) {
+    await new Promise((resolveWait) => setTimeout(resolveWait, settleMs));
+    audit = await auditLocated(located);
+    if (audit.status === 'pass') break;
+  }
   if (audit.status === 'fail' && !options.force) {
     const fallback = await reinstatePrevious(located, registrations, previous, options);
     const result = {

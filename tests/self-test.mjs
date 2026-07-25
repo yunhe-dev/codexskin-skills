@@ -5,7 +5,85 @@ import http from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { classifyReadability } from '../scripts/readability.mjs';
+import { classifyReadability, textSamplerSource } from '../scripts/readability.mjs';
+
+function samplerFixture() {
+  const root = {
+    tagName: 'MAIN',
+    classList: [],
+    parentElement: null,
+    childNodes: [],
+    contains(node) {
+      return node === this || node?.parentElement === this;
+    },
+  };
+  const makeElement = (text, { opacity = '1', hit = true } = {}) => ({
+    tagName: 'SPAN',
+    classList: [],
+    parentElement: root,
+    childNodes: [{ nodeType: 3, textContent: text }],
+    rect: { x: 10, y: 10, left: 10, top: 10, right: 110, bottom: 30, width: 100, height: 20 },
+    style: {
+      visibility: 'visible',
+      display: 'block',
+      opacity,
+      color: 'rgb(255, 255, 255)',
+      fontSize: '16px',
+    },
+    hit,
+    getBoundingClientRect() {
+      return this.rect;
+    },
+    closest() {
+      return null;
+    },
+    contains(node) {
+      return node === this;
+    },
+  });
+  root.style = {
+    visibility: 'visible',
+    display: 'block',
+    opacity: '1',
+    color: 'rgb(255, 255, 255)',
+    fontSize: '16px',
+  };
+  const visible = makeElement('Visible text');
+  const hiddenParent = {
+    ...root,
+    style: { ...root.style, opacity: '0' },
+  };
+  const hidden = makeElement('Hidden text');
+  hidden.parentElement = hiddenParent;
+  hiddenParent.contains = (node) => node === hiddenParent || node === hidden;
+  const occluded = makeElement('Occluded text', { hit: false });
+  const nativePanel = makeElement('Native panel text');
+  nativePanel.closest = () => nativePanel;
+  const overlay = makeElement('Overlay');
+  const elements = [visible, hidden, occluded, nativePanel];
+  const document = {
+    querySelectorAll: () => elements,
+    elementFromPoint: (x, y) => {
+      const candidate = elements.find((element) => {
+        const rect = element.rect;
+        return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom && element.hit;
+      });
+      return candidate || overlay;
+    },
+  };
+  const getComputedStyle = (element) => element.style;
+  const Node = { TEXT_NODE: 3 };
+  const run = Function(
+    'document',
+    'getComputedStyle',
+    'Node',
+    'innerWidth',
+    'innerHeight',
+    'devicePixelRatio',
+    `return ${textSamplerSource};`
+  );
+  return JSON.parse(run(document, getComputedStyle, Node, 1440, 900, 2));
+}
 
 function decodeClientFrame(buffer) {
   if ((buffer[0] & 0x0f) !== 1) return null;
@@ -157,6 +235,9 @@ try {
   assert.equal(skill.isThemeableAppTarget({
     url: 'app://-/index.html?initialRoute=%2Favatar-overlay',
   }), false);
+  assert.equal(skill.isThemeableAppTarget({
+    url: 'app://-/avatar-overlay-composition-surface.html?surfaceId=mascot-badge',
+  }), false);
 
   const parsed = skill.parseCliArgs(['switch', 'parity-test', '--launch', '--force', '--port', '9341']);
   assert.equal(parsed.argument, 'parity-test');
@@ -175,6 +256,10 @@ try {
     { text: 'critical one', ratio: 2.2, size: 14 },
     { text: 'critical two', ratio: 2.1, size: 14 },
   ]).status, 'fail');
+  assert.deepEqual(
+    samplerFixture().samples.map((sample) => sample.text),
+    ['Visible text']
+  );
 
   const fake = await fakeCdpServer();
   try {

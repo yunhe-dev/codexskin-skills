@@ -168,10 +168,21 @@ export function judgeSamples(image, samples, viewportWidth) {
 export const textSamplerSource = `(() => {
   const visible = (element) => {
     const rect = element.getBoundingClientRect();
-    const style = getComputedStyle(element);
-    return rect.width >= 5 && rect.height >= 5 && rect.bottom >= 0 && rect.top <= innerHeight &&
-      rect.right >= 0 && rect.left <= innerWidth && style.visibility !== 'hidden' &&
-      style.display !== 'none' && Number(style.opacity) > 0.15;
+    if (element.closest?.('[data-app-shell-focus-area="right-panel"]')) return false;
+    if (rect.width < 5 || rect.height < 5 || rect.bottom < 0 || rect.top > innerHeight ||
+      rect.right < 0 || rect.left > innerWidth) return false;
+    let current = element;
+    while (current) {
+      const style = getComputedStyle(current);
+      if (style.visibility === 'hidden' || style.visibility === 'collapse' ||
+        style.display === 'none' || Number(style.opacity) <= 0.15) return false;
+      current = current.parentElement;
+    }
+    const centerX = Math.max(0, Math.min(innerWidth - 1, rect.left + rect.width / 2));
+    const centerY = Math.max(0, Math.min(innerHeight - 1, rect.top + rect.height / 2));
+    const hit = document.elementFromPoint(centerX, centerY);
+    if (hit && hit !== element && !element.contains(hit) && !hit.contains(element)) return false;
+    return true;
   };
   const ownText = (element) => [...element.childNodes]
     .filter((node) => node.nodeType === Node.TEXT_NODE)
