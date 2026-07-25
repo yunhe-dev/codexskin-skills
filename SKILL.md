@@ -164,7 +164,10 @@ Submitter validates locally before `POST /api/themes/submit` and confirms that
 the user may share the assets. Without `CODEXSKIN_API_KEY`, explicitly say the
 submission will be anonymous and pending review. With a key, the response can
 publish immediately or update that key owner's theme. Always report the final
-status and detail URL. Never automate the human upload form as a fallback.
+status and detail URL. For bilingual listings, package
+`manifest.displayNameZh` and `README.zh.md`; the CLI forwards both Chinese
+fields and warns when they are missing. Never automate the human upload form as
+a fallback.
 
 ## Raw-file fallback
 

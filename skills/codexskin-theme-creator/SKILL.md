@@ -49,8 +49,10 @@ route behavior unless the design contract explicitly permits a change.
 
 ## Gate 3: scaffold and implement
 
-Create `manifest.json`, `theme.css`, `README.md`, `assets/`, `previews/`, and
-`state/` under the managed theme directory. Use the marker
+Create `manifest.json`, `theme.css`, `README.md`, `README.zh.md`, `assets/`,
+`previews/`, and `state/` under the managed theme directory. Store the Chinese
+name in `manifest.displayNameZh` and the Chinese summary in
+`manifest.descriptionZh`. Use the marker
 `data-codexskin-theme="<theme-id>"` and CodexSkin-owned runtime ids only.
 
 Implement in this order:

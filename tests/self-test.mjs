@@ -99,7 +99,9 @@ try {
     schemaVersion: 1,
     id: 'parity-test',
     displayName: 'Parity Test',
+    displayNameZh: '一致性测试',
     description: 'A controlled lifecycle test theme.',
+    descriptionZh: '一套受控的生命周期测试主题。',
     version: '1.0.0',
     mode: 'dark',
     css: 'theme.css',
@@ -115,6 +117,7 @@ try {
   await writeFile(join(themeDir, 'manifest.json'), JSON.stringify(manifest));
   await writeFile(join(themeDir, 'theme.css'), css);
   await writeFile(join(themeDir, 'README.md'), 'Controlled parity fixture.');
+  await writeFile(join(themeDir, 'README.zh.md'), '受控的一致性测试。');
   await writeFile(join(themeDir, 'assets', 'art.png'), png);
   await writeFile(join(themeDir, 'previews', 'preview-1440x900.png'), png);
   await writeFile(join(themeDir, 'previews', 'preview-980x760.png'), png);
@@ -128,6 +131,11 @@ try {
   assert.equal(portable.preview.filename, 'previews/preview-1440x900.png');
   assert.equal(portable.images[0].filename, 'previews/preview-980x760.png');
   assert.equal(portable.art.filename, 'assets/art.png');
+  assert.equal(portable.manifest.displayNameZh, '一致性测试');
+  assert.equal(portable.readmeZh, '受控的一致性测试。');
+  const payload = skill.submissionPayload(portable);
+  assert.equal(payload.nameZh, '一致性测试');
+  assert.equal(payload.descriptionZh, '受控的一致性测试。');
   assert.match(portable.css, /data:image\/png;base64,/);
   assert.doesNotMatch(portable.css, /url\("assets\/art\.png"\)/);
 

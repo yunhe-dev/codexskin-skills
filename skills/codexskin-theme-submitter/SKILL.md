@@ -11,6 +11,10 @@ Before transmission, identify the exact package, perform a dry validation, and
 confirm the user may share every included asset. Do not guess among multiple
 exports and do not upload until the user asked.
 
+For a bilingual public listing, require `manifest.displayNameZh` and a packaged
+`README.zh.md` (`readmeZh`). The CLI forwards them as `nameZh` and
+`descriptionZh`; warn before publishing when either Chinese field is missing.
+
 Without `CODEXSKIN_API_KEY`, explicitly say the submission will be anonymous
 and enter review. With a key, the server identifies the author and may publish
 immediately or update that author's existing theme. The key is not a website

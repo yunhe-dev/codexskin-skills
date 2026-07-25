@@ -125,6 +125,15 @@ export function validatePackage(value) {
   if (!value.css.includes(`data-codexskin-theme="${value.manifest.id}"`)) {
     fail('Theme CSS is not scoped to the manifest data-codexskin-theme marker.');
   }
+  for (const [label, localized] of [
+    ['manifest.displayNameZh', value.manifest.displayNameZh],
+    ['manifest.descriptionZh', value.manifest.descriptionZh],
+    ['readmeZh', value.readmeZh],
+  ]) {
+    if (localized !== undefined && typeof localized !== 'string') {
+      fail(`${label} must be a string when provided.`);
+    }
+  }
   const stylesheet = validateRelativeFilename(value.manifest.css || 'theme.css', 'Manifest stylesheet');
   if (extname(stylesheet).toLowerCase() !== '.css') fail('Manifest stylesheet must use a .css filename.');
   if (value.manifest.art) validateRelativeFilename(value.manifest.art, 'Manifest artwork');
@@ -146,6 +155,7 @@ export function validatePackage(value) {
   const rawHaystack = [
     value.css,
     value.readme || '',
+    value.readmeZh || '',
     JSON.stringify(value.manifest),
   ].join('\n');
   if (
@@ -431,6 +441,7 @@ export async function createTheme(directory) {
   // package's local image assets.
   const portableCss = await inlineLocalAssets(css, input);
   const readme = await readFile(join(input, 'README.md'), 'utf8').catch(() => '');
+  const readmeZh = await readFile(join(input, 'README.zh.md'), 'utf8').catch(() => '');
   const artRelative = manifest.art;
   let art;
   if (typeof artRelative === 'string') {
@@ -453,6 +464,7 @@ export async function createTheme(directory) {
     manifest,
     css: portableCss,
     readme,
+    ...(readmeZh ? { readmeZh } : {}),
     ...(art ? { art } : {}),
     preview: {
       filename: desktop.name,
@@ -1276,25 +1288,34 @@ export async function rollbackTheme() {
   return switchTheme(state.previous, true);
 }
 
+export function submissionPayload(value) {
+  return {
+    name: value.manifest.displayName,
+    nameZh: value.manifest.displayNameZh,
+    creator: value.manifest.author?.name || 'Community creator',
+    description: value.readme || '',
+    descriptionZh: value.readmeZh || value.manifest.descriptionZh || '',
+    rightsConfirmed: true,
+    package: value,
+    previewBase64: value.preview
+      ? `data:${value.preview.mimeType};base64,${value.preview.data}`
+      : undefined,
+  };
+}
+
 export async function submitTheme(packagePath) {
   if (!packagePath) fail('Usage: submit <package.codexskin-theme>');
   const value = validatePackage(JSON.parse(await readFile(resolve(packagePath), 'utf8')));
   if (!process.env.CODEXSKIN_API_KEY) {
     console.warn('No CODEXSKIN_API_KEY is configured. This will be an anonymous submission awaiting review.');
   }
+  if (!value.manifest.displayNameZh || !(value.readmeZh || value.manifest.descriptionZh)) {
+    console.warn('Chinese theme metadata is incomplete. Add manifest.displayNameZh and README.zh.md before publishing a bilingual listing.');
+  }
   const body = await fetchJson('/api/themes/submit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: JSON.stringify({
-      name: value.manifest.displayName,
-      creator: value.manifest.author?.name || 'Community creator',
-      description: value.readme || '',
-      rightsConfirmed: true,
-      package: value,
-      previewBase64: value.preview
-        ? `data:${value.preview.mimeType};base64,${value.preview.data}`
-        : undefined,
-    }),
+    body: JSON.stringify(submissionPayload(value)),
   });
   console.log(`${body.status}: ${baseUrl}${body.url}`);
 }
